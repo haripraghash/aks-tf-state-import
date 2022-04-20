@@ -60,9 +60,9 @@ jobs:
        cd ..
        mkdir oldstate
        ls -la
-       cp -r ./* ./oldstate
+       cp -r ./aks-tf-state-import/* ./oldstate
        cd ./oldstate
-       ls - la
+       ls -la
        terraform init -input=false -backend-config='storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME}}' -backend-config='container_name=dev-tfstate' -backend-config='key=aks.dev.tfstate' 
        terraform state list
        ls
