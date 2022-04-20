@@ -75,6 +75,51 @@ variable "piper_enable_ip_prefix" {
   default = true
 }
 
+# Need to add when importing
+variable "aks_api_server_authorized_ip_ranges" {
+  type    = list(any)
+  default = []
+}
+# Need to add when importing
+variable "aks_oms_agent_enabled" {
+  type    = bool
+  default = true
+}
+# Need to add when importing
+variable "aks_azure_policy_enabled" {
+  type    = bool
+  default = false
+}
+# Need to add when importing
+variable "aks_kube_dashboard_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "auto_scaler_profile" {
+  type = object({
+    balance_similar_node_groups      = bool
+    max_graceful_termination_sec     = number
+    scale_down_delay_after_add       = string
+    scale_down_delay_after_delete    = string
+    scale_down_delay_after_failure   = string
+    scan_interval                    = string
+    scale_down_unneeded              = string
+    scale_down_unready               = string
+    scale_down_utilization_threshold = number
+  })
+  default = {
+    balance_similar_node_groups      = false # -- detect similar node groups and balance the number of nodes between them - defaults to false
+    max_graceful_termination_sec     = 600   # -- maximum number of seconds the cluster autoscaler waits for pod termination when trying to scale down a node - defaults to 600
+    scale_down_delay_after_add       = "10m" # -- how long after the scale up of AKS nodes the scale down evaluation resumes - defaults to 10m
+    scale_down_delay_after_delete    = "10s" # -- how long after node deletion that scale down evaluation resume - defaults to the value used for scan_interval
+    scale_down_delay_after_failure   = "3m"  # -- how long after scale down failure that scale down evaluation resumes - defaults to 3m
+    scan_interval                    = "10s" # -- how often the AKS Cluster should be re-evaluated for scale up/down - defaults to 10s
+    scale_down_unneeded              = "10m" # -- how long a node should be unneeded before it is eligible for scale down - defaults to 10m
+    scale_down_unready               = "20m" # -- how long an unready node should be unneeded before it is eligible for scale down - defaults to 20m
+    scale_down_utilization_threshold = 0.5   # -- node utilization level, defined as sum of requested resources divided by capacity, below which a node can be considered for scale down - defaults to 0.5
+  }
+}
 
 data "azurerm_resource_group" "stack_piper_dns" {
   name = "${local.prefix}-dns-piper-rg"
@@ -85,7 +130,22 @@ data "azurerm_private_dns_zone" "stack_piper_dns" {
   resource_group_name = "${local.prefix}-dns-piper-rg"
 }
 
+# Need to add when importing
+data "azurerm_virtual_network" "stack_vnet" {
+  name                = "${local.prefix}-vnet"
+  resource_group_name = "${local.prefix}-vnet-rg"
+}
 
+# Need to add when importing
+data "azurerm_resource_group" "stack_vnet" {
+  name = "${local.prefix}-vnet-rg"
+}
+
+# Need to add when importing
+data "azurerm_log_analytics_workspace" "stack_log_analytics" {
+  name                = "${local.prefix}-log-analytics"
+  resource_group_name = "${local.prefix}-log-analytics-rg"
+}
 
 resource "azurerm_role_assignment" "piper_aks_cluster_admin_role_assignments" {
   scope                = module.piper_aks.id
