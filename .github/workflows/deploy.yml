@@ -54,14 +54,19 @@ jobs:
           tenant-id: ${{ secrets.GH_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.GH_AZURE_SUBSCRIPTION_ID }}
 
-    - name: Terraform Init
+    - name: Terraform Init - Source state
       id: init
-      run: terraform init -input=false -backend-config='storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME}}' -backend-config='container_name=dev-tfstate' -backend-config='key=aks.piper.dev.tfstate' 
+      run: |
+       cp ./* ./oldstate
+       cd ./oldstate
+       terraform init -input=false -backend-config='storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME}}' -backend-config='container_name=dev-tfstate' -backend-config='key=aks.dev.tfstate' 
+       terraform state list
+       ls
       #-backend-config='access_key=${{ secrets.ACCESS_KEY}}'
 
-    - name: Terraform Validate
-      id: validate
-      run: terraform validate
+    # - name: Terraform Validate
+    #   id: validate
+    #   run: terraform validate
 
     # - name: Terraform Plan
     #   id: plan
