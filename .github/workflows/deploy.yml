@@ -57,6 +57,8 @@ jobs:
     - name: Terraform Init - Source state
       id: init
       run: |
+       mkdir oldstate
+       ls -la
        cp ./* ./oldstate
        cd ./oldstate
        terraform init -input=false -backend-config='storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME}}' -backend-config='container_name=dev-tfstate' -backend-config='key=aks.dev.tfstate' 
