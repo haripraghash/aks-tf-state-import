@@ -59,13 +59,20 @@ jobs:
       run: |
        cd ..
        mkdir oldstate
-       ls -la
        cp -r ./aks-tf-state-import/* ./oldstate
        cd ./oldstate
-       ls -la
        terraform init -input=false -backend-config='storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME}}' -backend-config='container_name=dev-tfstate' -backend-config='key=aks.dev.tfstate' 
        terraform state list
-       ls
+       terraform state pull > oldstate.tfstate
+       cd ../aks-tf-state-import
+    
+    - name: Run terraform state import
+      run: |
+        chmod +x ./import-piper-state.sh
+        ./import-piper-state.sh
+      env: 
+        OLD_STATE_PATH: ../oldstate
+        OLD_STATE_FILE_NAME: oldstate.tfstate
       #-backend-config='access_key=${{ secrets.ACCESS_KEY}}'
 
     # - name: Terraform Validate
