@@ -64,6 +64,8 @@ jobs:
        terraform init -input=false -backend-config='storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME}}' -backend-config='container_name=dev-tfstate' -backend-config='key=aks.dev.tfstate' 
        terraform state list
        terraform state pull > oldstate.tfstate
+       ls -la 
+       terraform show -json ./oldstate.tfstate
        cd ../aks-tf-state-import
     
     - name: Terraform Init - Piper state
