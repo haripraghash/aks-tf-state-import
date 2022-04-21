@@ -9,7 +9,10 @@ for resource in ${piper_aad_resources[@]}; do
   if [ -z "$existingresource" ]; then
     echo "No state found for $resource therefore will import"
     echo "${OLD_STATE_PATH}/${OLD_STATE_FILE_NAME}"
-    resource_id=$(terraform show -json "${OLD_STATE_PATH}/${OLD_STATE_FILE_NAME}" | jq --compact-output --raw-output '.values.root_module.child_modules[].resources[] | select (.address == "${resource}").values.id') 
+    ls -la ${OLD_STATE_PATH}/${OLD_STATE_FILE_NAME}
+    terraform show -json "${OLD_STATE_PATH}/${OLD_STATE_FILE_NAME}" 
+    echo "${resource}"
+    resource_id=$(terraform show -json "${OLD_STATE_PATH}/${OLD_STATE_FILE_NAME}" | jq --compact-output --raw-output '.values.root_module.child_modules[].resources[] | select (.address == ${resource}).values.id') 
     terraform import "${resource}" "${resource_id}"
   else
     echo "State found for $state"
